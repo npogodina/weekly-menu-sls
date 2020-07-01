@@ -13,9 +13,9 @@ provider:
   region: ${opt:region, 'us-west-2'}
 
 functions:
-  hello:
-    handler: src/handlers/hello.handler
+  createDish:
+    handler: src/handlers/createDish.handler
     events:
       - http:
-          method: GET
-          path: /hello
+          method: POST
+          path: /dishes
