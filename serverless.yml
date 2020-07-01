@@ -14,10 +14,10 @@ provider:
 
 resources:
   Resources:
-    Dishes:
+    DishesTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: Dishes
+        TableName: DishesTable
         BillingMode: PAY_PER_REQUEST
         AttributeDefinitions:
           - AttributeName: userId
@@ -52,7 +52,7 @@ resources:
             Projection:
               ProjectionType: ALL
 
-          - IndexName: userIdBreakfastIndex
+          - IndexName: UserIdBreakfastIndex
             KeySchema:
               - AttributeName: userId
                 KeyType: HASH
