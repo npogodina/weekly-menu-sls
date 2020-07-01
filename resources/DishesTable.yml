@@ -1,0 +1,73 @@
+DishesTable:
+  Type: AWS::DynamoDB::Table
+  Properties:
+    TableName: DishesTable
+    BillingMode: PAY_PER_REQUEST
+    AttributeDefinitions:
+      - AttributeName: userId
+        AttributeType: S
+      - AttributeName: name
+        AttributeType: S
+      - AttributeName: timestamp
+        AttributeType: S
+
+      - AttributeName: breakfast
+        AttributeType: S
+      - AttributeName: lunch
+        AttributeType: S
+      - AttributeName: dinner
+        AttributeType: S
+      - AttributeName: other
+        AttributeType: S
+
+    KeySchema:
+      - AttributeName: userId
+        KeyType: HASH
+      - AttributeName: name
+        KeyType: RANGE
+
+    LocalSecondaryIndexes:
+      - IndexName: UserIdTimestampIndex
+        KeySchema:
+          - AttributeName: userId
+            KeyType: HASH
+          - AttributeName: timestamp
+            KeyType: RANGE
+        Projection:
+          ProjectionType: ALL
+
+      - IndexName: UserIdBreakfastIndex
+        KeySchema:
+          - AttributeName: userId
+            KeyType: HASH
+          - AttributeName: breakfast
+            KeyType: RANGE
+        Projection:
+          ProjectionType: ALL
+
+      - IndexName: UserIdLunchIndex
+        KeySchema:
+          - AttributeName: userId
+            KeyType: HASH
+          - AttributeName: lunch
+            KeyType: RANGE
+        Projection:
+          ProjectionType: ALL
+
+      - IndexName: UserIdDinnerIndex
+        KeySchema:
+          - AttributeName: userId
+            KeyType: HASH
+          - AttributeName: dinner
+            KeyType: RANGE
+        Projection:
+          ProjectionType: ALL
+
+      - IndexName: UserIdOtherIndex
+        KeySchema:
+          - AttributeName: userId
+            KeyType: HASH
+          - AttributeName: other
+            KeyType: RANGE
+        Projection:
+          ProjectionType: ALL
