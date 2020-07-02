@@ -27,6 +27,13 @@ functions:
       - http:
           method: POST
           path: /dishes
+  
+    getDishes:
+    handler: src/handlers/getDishes.handler
+    events:
+      - http:
+          method: GET
+          path: /dishes
 
 custom:
   DishesTable:
