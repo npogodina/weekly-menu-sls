@@ -35,6 +35,13 @@ functions:
           method: GET
           path: /dishes
 
+  getDish:
+    handler: src/handlers/getDish.handler
+    events:
+      - http:
+          method: GET
+          path: /dishes/{id}
+
 custom:
   DishesTable:
     name: !Ref DishesTable
