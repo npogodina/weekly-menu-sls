@@ -27,8 +27,8 @@ functions:
       - http:
           method: POST
           path: /dishes
-  
-    getDishes:
+
+  getDishes:
     handler: src/handlers/getDishes.handler
     events:
       - http:
