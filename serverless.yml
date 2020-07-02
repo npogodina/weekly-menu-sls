@@ -27,6 +27,7 @@ functions:
       - http:
           method: POST
           path: /dishes
+          authorizer: ${self:custom.authorizer}
 
   getDishes:
     handler: src/handlers/getDishes.handler
@@ -34,6 +35,7 @@ functions:
       - http:
           method: GET
           path: /dishes
+          authorizer: ${self:custom.authorizer}
 
   getDish:
     handler: src/handlers/getDish.handler
@@ -41,8 +43,10 @@ functions:
       - http:
           method: GET
           path: /dishes/{id}/{name}
+          authorizer: ${self:custom.authorizer}
 
 custom:
+  authorizer: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:weekly-menu-auth-service-${self:provider.stage}-auth
   DishesTable:
     name: !Ref DishesTable
     arn: !GetAtt DishesTable.Arn
