@@ -4,11 +4,12 @@ import middy from "@middy/core";
 import httpJsonBodyParser from "@middy/http-json-body-parser";
 import httpEventNormalizer from "@middy/http-event-normalizer";
 import httpErrorHandler from "@middy/http-error-handler";
+import createError from "http-errors";
 
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 
 async function createDish(event, context) {
-  const { name } = JSON.parse(event.body);
+  const { name } = event.body;
   const now = new Date();
 
   const dish = {
@@ -22,12 +23,17 @@ async function createDish(event, context) {
     other: "no",
   };
 
-  await dynamodb
-    .put({
-      TableName: process.env.DISHES_TABLE_NAME,
-      Item: dish,
-    })
-    .promise();
+  try {
+    await dynamodb
+      .put({
+        TableName: process.env.DISHES_TABLE_NAME,
+        Item: dish,
+      })
+      .promise();
+  } catch (error) {
+    console.error(error);
+    throw new createError.InternalServerError(error);
+  }
 
   return {
     statusCode: 201,
@@ -35,4 +41,7 @@ async function createDish(event, context) {
   };
 }
 
-export const handler = createDish;
+export const handler = middy(createDish)
+  .use(httpJsonBodyParser())
+  .use(httpEventNormalizer())
+  .use(httpErrorHandler());
