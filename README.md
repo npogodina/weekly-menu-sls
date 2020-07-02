@@ -47,5 +47,6 @@ LCI (Local Secondary Index) provides fast look up with alternative queries, but 
 - POST /dishes - to create a new dish
 - GET /dishes - to get all dishes
 - GET /dishes/{id}/{name} where id is userId and name is name - to show one dish
+(need to remove id, it will come from context key of the object returned by auth function)
 
 Updating dish will be a put method (AWS.DynamoDB.DocumentClient) and will replace the whole item based on matching primary key: userId and name. There won't be an option to modify name in UI (React).
