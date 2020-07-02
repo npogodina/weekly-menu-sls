@@ -42,3 +42,10 @@ DishesTable:
 ```
 LCI (Local Secondary Index) provides fast look up with alternative queries, but depending on the amount of data it might be wiser to move sorting/filtering to React to avoid extra API calls.
   
+## REST API:
+### Endpoints:
+- POST /dishes - to create a new dish
+- GET /dishes - to get all dishes
+- GET /dishes/{id}/{name} where id is userId and name is name - to show one dish
+
+Updating dish will be a put method (AWS.DynamoDB.DocumentClient) and will replace the whole item based on matching primary key: userId and name. There won't be an option to modify name in UI (React).
