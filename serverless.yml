@@ -40,7 +40,7 @@ functions:
     events:
       - http:
           method: GET
-          path: /dishes/{id}
+          path: /dishes/{id}/{name}
 
 custom:
   DishesTable:
