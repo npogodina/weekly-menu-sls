@@ -21,7 +21,7 @@ async function getDishes(event, context) {
   }
 
   return {
-    statusCode: 201,
+    statusCode: 200,
     body: JSON.stringify(dishes),
   };
 }
