@@ -18,4 +18,27 @@ Plugins:
 
 ## Data modeling:
 
-
+DishesTable:
+```
+{
+  userId: uuid,                       // partition key
+  name: string,                       // sort key
+  dishId: uuid,                       // ? not needed ?
+  timestamp: new Date().toISOString,  // LCI
+  recipe: [],
+  imageUrl: string,
+  ingredients: [
+    {
+      name: string,
+      amount: number,
+      measurement: string
+    }
+  ],
+  breakfast: string,                  // LCI
+  lunch: string,                      // LCI
+  dinner: string,                     // LCI
+  other: string                       // LCI
+}
+```
+LCI (Local Secondary Index) provides fast look up with alternative queries, but depending on the amount of data it might be wiser to move sorting/filtering to React to avoid extra API calls.
+  
