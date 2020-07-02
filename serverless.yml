@@ -11,12 +11,15 @@ provider:
   # memorySize: 256
   stage: ${opt:stage, 'dev'}
   region: ${opt:region, 'us-west-2'}
+  environment:
+    DISHES_TABLE_NAME: ${self:custom.DishesTable.name}
   iamRoleStatements:
     - ${file(iam/DishesTableIAM.yml):DishesTableIAM}
 
 resources:
   Resources:
     DishesTable: ${file(resources/DishesTable.yml):DishesTable}
+
 functions:
   createDish:
     handler: src/handlers/createDish.handler
@@ -24,3 +27,8 @@ functions:
       - http:
           method: POST
           path: /dishes
+
+custom:
+  DishesTable:
+    name: !Ref DishesTable
+    arn: !GetAtt DishesTable.Arn

@@ -3,4 +3,4 @@ DishesTableIAM:
   Action:
     - dynamodb:PutItem
   Resource:
-    - arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/DishesTable
+    - ${self:custom.DishesTable.arn}
