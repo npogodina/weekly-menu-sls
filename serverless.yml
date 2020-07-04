@@ -27,6 +27,7 @@ functions:
       - http:
           method: POST
           path: /dishes
+          cors: true
           authorizer: ${self:custom.authorizer}
 
   getDishes:
@@ -35,6 +36,7 @@ functions:
       - http:
           method: GET
           path: /dishes
+          cors: true
           authorizer: ${self:custom.authorizer}
 
   getDish:
@@ -43,6 +45,7 @@ functions:
       - http:
           method: GET
           path: /dishes/{id}/{name}
+          cors: true
           authorizer: ${self:custom.authorizer}
 
 custom:
