@@ -6,17 +6,17 @@ import commonMiddleware from "../lib/commonMiddleware";
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 
 async function createDish(event, context) {
-  const { name } = event.body;
-  const { sub } = event.requestContext.authorizer;
+  const { name, breakfast } = event.body;
+  // const { sub } = event.requestContext.authorizer;
 
   const now = new Date();
 
   const dish = {
-    userId: sub,
+    userId: "1", // sub,
     name,
     dishId: uuid(),
     timestamp: now.toISOString(),
-    breakfast: "no",
+    breakfast,
     lunch: "yes",
     dinner: "yes",
     other: "no",
