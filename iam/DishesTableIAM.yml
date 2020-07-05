@@ -4,5 +4,6 @@ DishesTableIAM:
     - dynamodb:PutItem
     - dynamodb:Scan
     - dynamodb:GetItem
+    - dynamodb:*
   Resource:
     - ${self:custom.DishesTable.arn}
