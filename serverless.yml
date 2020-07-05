@@ -28,7 +28,7 @@ functions:
           method: POST
           path: /dishes
           cors: true
-          authorizer: ${self:custom.authorizer}
+          # authorizer: ${self:custom.authorizer}
 
   getDishes:
     handler: src/handlers/getDishes.handler
@@ -37,7 +37,7 @@ functions:
           method: GET
           path: /dishes
           cors: true
-          authorizer: ${self:custom.authorizer}
+          # authorizer: ${self:custom.authorizer}
 
   getDish:
     handler: src/handlers/getDish.handler
