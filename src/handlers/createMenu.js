@@ -29,20 +29,42 @@ async function createMenu(event, context) {
     throw new createError.InternalServerError(error);
   }
 
+  let day2 = new Date(startDate);
+  day2.setDate(day2.getDate() + 1);
+  day2 = day2.toISOString();
+
   const menu = {
     userId,
     startDate,
     timestamp: now.toISOString(),
-    menu: { startDate: { breakfast: "", lunch: "", dinner: "" } },
+    menu: {
+      [startDate]: { breakfast: "", lunch: "", dinner: "" },
+      [day2]: { breakfast: "", lunch: "", dinner: "" },
+    },
   };
 
   dishes.forEach((dish) => {
     if (dish.breakfast === "y") {
-      menu.menu.startDate.breakfast = dish.name;
+      for (const day in menu.menu) {
+        if (menu.menu[day].breakfast === "") {
+          menu.menu[day].breakfast = dish.name;
+          break;
+        }
+      }
     } else if (dish.lunch === "y") {
-      menu.menu.startDate.lunch = dish.name;
+      for (const day in menu.menu) {
+        if (menu.menu[day].lunch === "") {
+          menu.menu[day].lunch = dish.name;
+          break;
+        }
+      }
     } else if (dish.dinner === "y") {
-      menu.menu.startDate.dinner = dish.name;
+      for (const day in menu.menu) {
+        if (menu.menu[day].dinner === "") {
+          menu.menu[day].dinner = dish.name;
+          break;
+        }
+      }
     }
   });
 
