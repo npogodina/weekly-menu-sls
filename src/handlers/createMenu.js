@@ -8,7 +8,6 @@ const dynamodb = new AWS.DynamoDB.DocumentClient();
 async function createMenu(event, context) {
   const { userId, startDate } = event.body;
   // const { userId } = event.body;
-
   // const { sub } = event.requestContext.authorizer;
 
   const now = new Date();
@@ -30,9 +29,12 @@ async function createMenu(event, context) {
     throw new createError.InternalServerError(error);
   }
 
-  let day2 = new Date(startDate);
-  day2.setDate(day2.getDate() + 1);
-  day2 = day2.toISOString();
+  const dates = [startDate];
+  for (let i = 1; i < 7; i++) {
+    let day = new Date(startDate);
+    day.setDate(day.getDate() + i);
+    dates.push(day.toISOString());
+  }
 
   const menu = {
     userId,
@@ -40,8 +42,13 @@ async function createMenu(event, context) {
     timestamp: now.toISOString(),
     menuId: uuid(),
     menu: {
-      [startDate]: { breakfast: "", lunch: "", dinner: "" },
-      [day2]: { breakfast: "", lunch: "", dinner: "" },
+      [dates[0]]: { breakfast: "", lunch: "", dinner: "" },
+      [dates[1]]: { breakfast: "", lunch: "", dinner: "" },
+      [dates[2]]: { breakfast: "", lunch: "", dinner: "" },
+      [dates[3]]: { breakfast: "", lunch: "", dinner: "" },
+      [dates[4]]: { breakfast: "", lunch: "", dinner: "" },
+      [dates[5]]: { breakfast: "", lunch: "", dinner: "" },
+      [dates[6]]: { breakfast: "", lunch: "", dinner: "" },
     },
   };
 
