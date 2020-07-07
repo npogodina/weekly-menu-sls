@@ -13,12 +13,15 @@ provider:
   region: ${opt:region, 'us-west-2'}
   environment:
     DISHES_TABLE_NAME: ${self:custom.DishesTable.name}
+    MENUS_TABLE_NAME: ${self:custom.MenusTable.name}
   iamRoleStatements:
     - ${file(iam/DishesTableIAM.yml):DishesTableIAM}
+    - ${file(iam/MenusTableIAM.yml):MenusTableIAM}
 
 resources:
   Resources:
     DishesTable: ${file(resources/DishesTable.yml):DishesTable}
+    MenusTable: ${file(resources/MenusTable.yml):MenusTable}
 
 functions:
   createDish:
@@ -48,8 +51,20 @@ functions:
           cors: true
           authorizer: ${self:custom.authorizer}
 
+  createMenu:
+    handler: src/handlers/createMenu.handler
+    events:
+      - http:
+          method: POST
+          path: /menus
+          cors: true
+          # authorizer: ${self:custom.authorizer}
+
 custom:
   authorizer: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:weekly-menu-auth-service-${self:provider.stage}-auth
   DishesTable:
     name: !Ref DishesTable
     arn: !GetAtt DishesTable.Arn
+  MenusTable:
+    name: !Ref MenusTable
+    arn: !GetAtt MenusTable.Arn

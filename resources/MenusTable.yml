@@ -1,0 +1,16 @@
+MenusTable:
+  Type: AWS::DynamoDB::Table
+  Properties:
+    TableName: MenusTable-${self:provider.stage}
+    BillingMode: PAY_PER_REQUEST
+    AttributeDefinitions:
+      - AttributeName: userId
+        AttributeType: S
+      - AttributeName: startDate
+        AttributeType: S
+
+    KeySchema:
+      - AttributeName: userId
+        KeyType: HASH
+      - AttributeName: startDate
+        KeyType: RANGE

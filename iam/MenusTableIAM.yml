@@ -1,0 +1,9 @@
+MenusTableIAM:
+  Effect: Allow
+  Action:
+    - dynamodb:PutItem
+    - dynamodb:Scan
+    - dynamodb:GetItem
+    - dynamodb:*
+  Resource:
+    - ${self:custom.MenusTable.arn}
