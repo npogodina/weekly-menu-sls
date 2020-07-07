@@ -5,12 +5,12 @@ import commonMiddleware from "../lib/commonMiddleware";
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 
 async function createMenu(event, context) {
-  // const { userId, startDate } = event.body;
-  const { userId } = event.body;
+  const { userId, startDate } = event.body;
+  // const { userId } = event.body;
 
   // const { sub } = event.requestContext.authorizer;
 
-  // const now = new Date();
+  const now = new Date();
 
   let dishes;
   const params = {
@@ -23,33 +23,44 @@ async function createMenu(event, context) {
 
   try {
     const result = await dynamodb.query(params).promise();
-    dishes = JSON.stringify(result.Items);
+    dishes = result.Items;
   } catch (error) {
     console.error(error);
     throw new createError.InternalServerError(error);
   }
 
-  // const menu = {
-  //   userId,
-  //   startDate,
-  //   timestamp: now.toISOString(),
-  // };
+  const menu = {
+    userId,
+    startDate,
+    timestamp: now.toISOString(),
+    menu: { startDate: { breakfast: "", lunch: "", dinner: "" } },
+  };
 
-  // try {
-  //   await dynamodb
-  //     .put({
-  //       TableName: process.env.MENUS_TABLE_NAME,
-  //       Item: menu,
-  //     })
-  //     .promise();
-  // } catch (error) {
-  //   console.error(error);
-  //   throw new createError.InternalServerError(error);
-  // }
+  dishes.forEach((dish) => {
+    if (dish.breakfast === "y") {
+      menu.menu.startDate.breakfast = dish.name;
+    } else if (dish.lunch === "y") {
+      menu.menu.startDate.lunch = dish.name;
+    } else if (dish.dinner === "y") {
+      menu.menu.startDate.dinner = dish.name;
+    }
+  });
+
+  try {
+    await dynamodb
+      .put({
+        TableName: process.env.MENUS_TABLE_NAME,
+        Item: menu,
+      })
+      .promise();
+  } catch (error) {
+    console.error(error);
+    throw new createError.InternalServerError(error);
+  }
 
   return {
     statusCode: 201,
-    body: dishes,
+    body: JSON.stringify(menu),
   };
 }
 
