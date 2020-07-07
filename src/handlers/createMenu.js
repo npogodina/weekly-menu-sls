@@ -1,4 +1,5 @@
 import AWS from "aws-sdk";
+import { v4 as uuid } from "uuid";
 import createError from "http-errors";
 import commonMiddleware from "../lib/commonMiddleware";
 
@@ -37,6 +38,7 @@ async function createMenu(event, context) {
     userId,
     startDate,
     timestamp: now.toISOString(),
+    menuId: uuid(),
     menu: {
       [startDate]: { breakfast: "", lunch: "", dinner: "" },
       [day2]: { breakfast: "", lunch: "", dinner: "" },
