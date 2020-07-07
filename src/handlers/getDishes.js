@@ -6,6 +6,7 @@ const dynamodb = new AWS.DynamoDB.DocumentClient();
 
 async function getDishes(event, context) {
   // const { userId } = event.body;
+  // const { sub } = event.requestContext.authorizer;
 
   let dishes;
 
