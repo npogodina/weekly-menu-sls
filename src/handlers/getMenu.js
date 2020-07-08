@@ -20,7 +20,7 @@ async function getMenu(event, context) {
   };
 
   try {
-    const result = await dynamodb.get(params).promise();
+    const result = await dynamodb.query(params).promise();
     menu = result.Item;
   } catch (error) {
     console.error(error);

@@ -7,3 +7,7 @@ MenusTableIAM:
     - dynamodb:*
   Resource:
     - ${self:custom.MenusTable.arn}
+    - !Join [
+        "/",
+        ["${self:custom.MenusTable.arn}", "index", "menuIdGlobalIndex"],
+      ]
