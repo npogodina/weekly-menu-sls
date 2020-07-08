@@ -8,9 +8,19 @@ MenusTable:
         AttributeType: S
       - AttributeName: startDate
         AttributeType: S
+      - AttributeName: menuId
+        AttributeType: S
 
     KeySchema:
       - AttributeName: userId
         KeyType: HASH
       - AttributeName: startDate
         KeyType: RANGE
+
+    GlobalSecondaryIndexes:
+      - IndexName: menuIdGlobalIndex
+        KeySchema:
+          - AttributeName: menuId
+            KeyType: HASH
+        Projection:
+          ProjectionType: ALL

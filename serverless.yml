@@ -68,6 +68,14 @@ functions:
           path: /menus
           cors: true
 
+  getMenu:
+    handler: src/handlers/getMenu.handler
+    events:
+      - http:
+          method: GET
+          path: /menus/{menuId}
+          cors: true
+
 custom:
   authorizer: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:weekly-menu-auth-service-${self:provider.stage}-auth
   DishesTable:
