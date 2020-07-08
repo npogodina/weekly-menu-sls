@@ -76,6 +76,7 @@ async function createMenu(event, context) {
       [dates[5]]: { breakfast: "", lunch: "", dinner: "" },
       [dates[6]]: { breakfast: "", lunch: "", dinner: "" },
     },
+    groceryList: {},
   };
 
   const addDishes = () => {
@@ -87,6 +88,22 @@ async function createMenu(event, context) {
         for (const day in menu.menu) {
           if (menu.menu[day].breakfast === "") {
             menu.menu[day].breakfast = dish.name;
+            if (dish.ingredients) {
+              dish.ingredients.forEach((ingredient) => {
+                if (menu.groceryList[ingredient.name]) {
+                  if (ingredient.amount) {
+                    menu.groceryList[ingredient.name].push({
+                      amount: ingredient.amount,
+                    });
+                  }
+                } else {
+                  menu.groceryList[ingredient.name] = [
+                    // { amount: ingredient.amount },
+                  ];
+                }
+              });
+            }
+
             servings = servings - 2;
             if (servings < 2) {
               used = true;
