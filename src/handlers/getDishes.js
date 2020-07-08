@@ -7,16 +7,16 @@ const dynamodb = new AWS.DynamoDB.DocumentClient();
 async function getDishes(event, context) {
   // const { userId } = event.body;
   // const { sub } = event.requestContext.authorizer;
-
+  const { userId } = event.queryStringParameters;
   let dishes;
 
-  const nataliya = "google-oauth2|102165070264738113845";
+  // const nataliya = "google-oauth2|102165070264738113845";
   const params = {
     TableName: process.env.DISHES_TABLE_NAME,
     // IndexName: 'Index',
     KeyConditionExpression: "userId = :hkey",
     ExpressionAttributeValues: {
-      ":hkey": nataliya,
+      ":hkey": userId,
     },
   };
 
