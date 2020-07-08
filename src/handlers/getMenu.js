@@ -1,6 +1,6 @@
 import AWS from "aws-sdk";
 import createError from "http-errors";
-import urlSlug from "url-slug";
+// import urlSlug from "url-slug";
 import commonMiddleware from "../lib/commonMiddleware";
 
 const dynamodb = new AWS.DynamoDB.DocumentClient();
@@ -20,30 +20,21 @@ async function getMenu(event, context) {
   };
 
   try {
-    const result = await dynamodb
-      .get({
-        TableName: process.env.DISHES_TABLE_NAME,
-        Key: {
-          userId: id,
-          name: name,
-        },
-      })
-      .promise();
-
-    dish = result.Item;
+    const result = await dynamodb.get(params).promise();
+    menu = result.Item;
   } catch (error) {
     console.error(error);
     throw new createError.InternalServerError(error);
   }
 
-  if (!dish) {
+  if (!menu) {
     throw new createError.NotFound(`Dish not found`);
   }
 
   return {
     statusCode: 200,
-    body: JSON.stringify(dish),
+    body: JSON.stringify(menu),
   };
 }
 
-export const handler = commonMiddleware(getDish);
+export const handler = commonMiddleware(getMenu);
