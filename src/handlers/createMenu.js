@@ -62,12 +62,17 @@ async function createMenu(event, context) {
 
   shuffledDishes.forEach((dish) => {
     let used = false;
+    let servings = dish.servings;
+
     if (dish.breakfast === "y") {
       for (const day in menu.menu) {
         if (menu.menu[day].breakfast === "") {
           menu.menu[day].breakfast = dish.name;
-          used = true;
-          break;
+          servings = servings - 2;
+          if (servings < 2) {
+            used = true;
+            break;
+          }
         }
       }
     }
@@ -78,8 +83,11 @@ async function createMenu(event, context) {
       for (const day in menu.menu) {
         if (menu.menu[day].lunch === "") {
           menu.menu[day].lunch = dish.name;
-          used = true;
-          break;
+          servings = servings - 2;
+          if (servings < 2) {
+            used = true;
+            break;
+          }
         }
       }
     }
@@ -90,7 +98,11 @@ async function createMenu(event, context) {
       for (const day in menu.menu) {
         if (menu.menu[day].dinner === "") {
           menu.menu[day].dinner = dish.name;
-          break;
+          servings = servings - 2;
+          if (servings < 2) {
+            used = true;
+            break;
+          }
         }
       }
     }
