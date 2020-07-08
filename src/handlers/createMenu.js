@@ -29,6 +29,14 @@ async function createMenu(event, context) {
     throw new createError.InternalServerError(error);
   }
 
+  let shuffledDishes = dishes;
+  for (let i = shuffledDishes.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * i);
+    const temp = shuffledDishes[i];
+    shuffledDishes[i] = shuffledDishes[j];
+    shuffledDishes[j] = temp;
+  }
+
   const dates = [startDate];
   for (let i = 1; i < 7; i++) {
     let day = new Date(startDate);
@@ -52,7 +60,7 @@ async function createMenu(event, context) {
     },
   };
 
-  dishes.forEach((dish) => {
+  shuffledDishes.forEach((dish) => {
     let used = false;
     if (dish.breakfast === "y") {
       for (const day in menu.menu) {
