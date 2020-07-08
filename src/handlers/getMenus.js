@@ -5,17 +5,18 @@ import commonMiddleware from "../lib/commonMiddleware";
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 
 async function getMenus(event, context) {
-  // const { userId } = event.body;
+  console.log(event);
+  const { userId } = event.queryStringParameters;
   // const { sub } = event.requestContext.authorizer;
 
   let menus;
 
-  const nataliya = "google-oauth2|102165070264738113845";
+  // const nataliya = "google-oauth2|102165070264738113845";
   const params = {
     TableName: process.env.MENUS_TABLE_NAME,
     KeyConditionExpression: "userId = :hkey",
     ExpressionAttributeValues: {
-      ":hkey": nataliya,
+      ":hkey": userId,
     },
   };
 
