@@ -29,6 +29,24 @@ async function createMenu(event, context) {
     throw new createError.InternalServerError(error);
   }
 
+  let check = [0, 0, 0];
+  dishes.forEach((dish) => {
+    if (dish.breakfast === "y") {
+      check[0]++;
+    }
+    if (dish.lunch === "y") {
+      check[1]++;
+    }
+    if (dish.dinner === "y") {
+      check[2]++;
+    }
+  });
+  check.forEach((num) => {
+    if (num === 0) {
+      throw new createError.InternalServerError("Not enough dish variety.");
+    }
+  });
+
   let shuffledDishes = dishes;
   for (let i = shuffledDishes.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * i);
@@ -60,53 +78,70 @@ async function createMenu(event, context) {
     },
   };
 
-  shuffledDishes.forEach((dish) => {
-    let used = false;
-    let servings = dish.servings;
+  const addDishes = () => {
+    shuffledDishes.forEach((dish) => {
+      let used = false;
+      let servings = dish.servings;
 
-    if (dish.breakfast === "y") {
-      for (const day in menu.menu) {
-        if (menu.menu[day].breakfast === "") {
-          menu.menu[day].breakfast = dish.name;
-          servings = servings - 2;
-          if (servings < 2) {
-            used = true;
-            break;
+      if (dish.breakfast === "y") {
+        for (const day in menu.menu) {
+          if (menu.menu[day].breakfast === "") {
+            menu.menu[day].breakfast = dish.name;
+            servings = servings - 2;
+            if (servings < 2) {
+              used = true;
+              break;
+            }
           }
         }
       }
-    }
-    if (used) {
-      return;
-    }
-    if (dish.lunch === "y") {
-      for (const day in menu.menu) {
-        if (menu.menu[day].lunch === "") {
-          menu.menu[day].lunch = dish.name;
-          servings = servings - 2;
-          if (servings < 2) {
-            used = true;
-            break;
+      if (used) {
+        return;
+      }
+      if (dish.lunch === "y") {
+        for (const day in menu.menu) {
+          if (menu.menu[day].lunch === "") {
+            menu.menu[day].lunch = dish.name;
+            servings = servings - 2;
+            if (servings < 2) {
+              used = true;
+              break;
+            }
           }
         }
       }
-    }
-    if (used) {
-      return;
-    }
-    if (dish.dinner === "y") {
-      for (const day in menu.menu) {
-        if (menu.menu[day].dinner === "") {
-          menu.menu[day].dinner = dish.name;
-          servings = servings - 2;
-          if (servings < 2) {
-            used = true;
-            break;
+      if (used) {
+        return;
+      }
+      if (dish.dinner === "y") {
+        for (const day in menu.menu) {
+          if (menu.menu[day].dinner === "") {
+            menu.menu[day].dinner = dish.name;
+            servings = servings - 2;
+            if (servings < 2) {
+              used = true;
+              break;
+            }
           }
         }
       }
+    });
+  };
+
+  let filled = false;
+  while (!filled) {
+    filled = true;
+    addDishes();
+    for (const day in menu.menu) {
+      if (
+        menu.menu[day].breakfast === "" ||
+        menu.menu[day].lunch === "" ||
+        menu.menu[day].dinner === ""
+      ) {
+        filled = false;
+      }
     }
-  });
+  }
 
   try {
     await dynamodb
