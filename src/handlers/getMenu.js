@@ -7,6 +7,7 @@ const dynamodb = new AWS.DynamoDB.DocumentClient();
 
 async function getMenu(event, context) {
   let menu;
+  console.log(event.pathParameters);
   let { menuId } = event.pathParameters;
   // name = urlSlug.revert(name, "-", urlSlug.transformers.titlecase);
 
@@ -21,7 +22,8 @@ async function getMenu(event, context) {
 
   try {
     const result = await dynamodb.query(params).promise();
-    menu = result.Item;
+    console.log(result);
+    menu = result.Items[0];
   } catch (error) {
     console.error(error);
     throw new createError.InternalServerError(error);
