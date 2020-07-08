@@ -53,21 +53,32 @@ async function createMenu(event, context) {
   };
 
   dishes.forEach((dish) => {
+    let used = false;
     if (dish.breakfast === "y") {
       for (const day in menu.menu) {
         if (menu.menu[day].breakfast === "") {
           menu.menu[day].breakfast = dish.name;
+          used = true;
           break;
         }
       }
-    } else if (dish.lunch === "y") {
+    }
+    if (used) {
+      return;
+    }
+    if (dish.lunch === "y") {
       for (const day in menu.menu) {
         if (menu.menu[day].lunch === "") {
           menu.menu[day].lunch = dish.name;
+          used = true;
           break;
         }
       }
-    } else if (dish.dinner === "y") {
+    }
+    if (used) {
+      return;
+    }
+    if (dish.dinner === "y") {
       for (const day in menu.menu) {
         if (menu.menu[day].dinner === "") {
           menu.menu[day].dinner = dish.name;
