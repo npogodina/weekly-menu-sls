@@ -82,6 +82,7 @@ async function createMenu(event, context) {
   const addToGroceryList = (dish) => {
     dish.ingredients.forEach((ingredient) => {
       if (menu.groceryList[ingredient.name]) {
+        let added = false;
         menu.groceryList[ingredient.name].forEach((amountInfo) => {
           let alreadyIn = false;
           amountInfo.for.forEach((dishName) => {
@@ -89,41 +90,54 @@ async function createMenu(event, context) {
               alreadyIn = true;
             }
           });
-          !alreadyIn && amountInfo.for.push(dish.name);
 
-          if (!ingredient.amount && amountInfo.amount === "some") {
-            console.log("ingredient with no amount"); // remove
+          if (!added && !ingredient.amount && amountInfo.amount === "some") {
+            !alreadyIn && amountInfo.for.push(dish.name);
+            added = true;
           } else if (
-            ingredient.amount &&
-            !ingredient.measurement &&
-            amountInfo.amount &&
-            !amountInfo.measurement
+            (!added &&
+              ingredient.amount &&
+              !ingredient.measurement &&
+              amountInfo.amount &&
+              !amountInfo.measurement) ||
+            (!added &&
+              ingredient.amount &&
+              ingredient.measurement &&
+              amountInfo.amount &&
+              amountInfo.measurement === ingredient.measurement)
           ) {
-            // amountInfo.for.push(dish.name);
-            amountInfo["comment"] = "Need to sum ingredients";
-          } else if (
-            ingredient.amount &&
-            ingredient.measurement &&
-            amountInfo.amount &&
-            amountInfo.measurement === ingredient.measurement
-          ) {
-            // amountInfo.for.push(dish.name);
-            amountInfo["comment"] = "Need to sum ingredients";
-          } else {
-            if (ingredient.amount) {
-              let addOn = { amount: ingredient.amount };
-              if (ingredient.measurement) {
-                addOn["measurement"] = ingredient.measurement;
-              }
-              menu.groceryList[ingredient.name].push(addOn);
-            } else {
-              menu.groceryList[ingredient.name].push({ amount: "some" });
+            const existingAmount = Number(amountInfo.amount);
+            const amountToAdd = Number(ingredient.amount);
+            if (existingAmount && amountToAdd) {
+              amountInfo.amount = existingAmount + amountToAdd;
+              amountInfo["comment"] = "Sumed up the ingredients";
             }
-            menu.groceryList[ingredient.name][
-              menu.groceryList[ingredient.name].length - 1
-            ]["for"] = [dish.name];
+            !alreadyIn && amountInfo.for.push(dish.name);
+            added = true;
           }
         });
+        if (!added && ingredient.amount) {
+          //
+          let addOn = { amount: ingredient.amount };
+          if (ingredient.measurement) {
+            addOn["measurement"] = ingredient.measurement;
+          }
+          menu.groceryList[ingredient.name].push(addOn);
+          menu.groceryList[ingredient.name][
+            menu.groceryList[ingredient.name].length - 1
+          ]["for"] = [dish.name];
+          added = true;
+        } else if (!added) {
+          menu.groceryList[ingredient.name].push({ amount: "some" });
+          menu.groceryList[ingredient.name][
+            menu.groceryList[ingredient.name].length - 1
+          ]["for"] = [dish.name];
+          added = true;
+        }
+        // menu.groceryList[ingredient.name][
+        //   menu.groceryList[ingredient.name].length - 1
+        // ]["for"] = [dish.name];
+        // added = true;
       } else {
         if (ingredient.amount) {
           menu.groceryList[ingredient.name] = [{ amount: ingredient.amount }];
