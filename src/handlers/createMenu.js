@@ -79,6 +79,58 @@ async function createMenu(event, context) {
     groceryList: {},
   };
 
+  const addToGroceryList = (dish) => {
+    dish.ingredients.forEach((ingredient) => {
+      if (menu.groceryList[ingredient.name]) {
+        menu.groceryList[ingredient.name].forEach((amountInfo) => {
+          if (!ingredient.amount && amountInfo.amount === "some") {
+            amountInfo.for.push(dish.name);
+          } else if (
+            ingredient.amount &&
+            !ingredient.measurement &&
+            amountInfo.amount &&
+            !amountInfo.measurement
+          ) {
+            amountInfo.for.push(dish.name);
+            amountInfo["comment"] = "Need to sum ingredients";
+          } else if (
+            ingredient.amount &&
+            ingredient.measurement &&
+            amountInfo.amount &&
+            amountInfo.measurement === ingredient.measurement
+          ) {
+            amountInfo.for.push(dish.name);
+            amountInfo["comment"] = "Need to sum ingredients";
+          } else {
+            if (ingredient.amount) {
+              let addOn = { amount: ingredient.amount };
+              if (ingredient.measurement) {
+                addOn["measurement"] = ingredient.measurement;
+              }
+              menu.groceryList[ingredient.name].push(addOn);
+            } else {
+              menu.groceryList[ingredient.name].push({ amount: "some" });
+            }
+            menu.groceryList[ingredient.name][
+              menu.groceryList[ingredient.name].length - 1
+            ]["for"] = [dish.name];
+          }
+        });
+      } else {
+        if (ingredient.amount) {
+          menu.groceryList[ingredient.name] = [{ amount: ingredient.amount }];
+          if (ingredient.measurement) {
+            menu.groceryList[ingredient.name][0]["measurement"] =
+              ingredient.measurement;
+          }
+        } else {
+          menu.groceryList[ingredient.name] = [{ amount: "some" }];
+        }
+        menu.groceryList[ingredient.name][0]["for"] = [dish.name];
+      }
+    });
+  };
+
   const addDishes = () => {
     shuffledDishes.forEach((dish) => {
       let used = false;
@@ -89,33 +141,8 @@ async function createMenu(event, context) {
           if (menu.menu[day].breakfast === "") {
             menu.menu[day].breakfast = dish.name;
             if (dish.ingredients) {
-              dish.ingredients.forEach((ingredient) => {
-                if (menu.groceryList[ingredient.name]) {
-                  if (ingredient.amount) {
-                    let addOn = { amount: ingredient.amount };
-                    if (ingredient.measurement) {
-                      addOn["measurement"] = ingredient.measurement;
-                    }
-                    menu.groceryList[ingredient.name].push(addOn);
-                  } else {
-                    menu.groceryList[ingredient.name].push({ amount: "some" });
-                  }
-                } else {
-                  if (ingredient.amount) {
-                    menu.groceryList[ingredient.name] = [
-                      { amount: ingredient.amount },
-                    ];
-                    if (ingredient.measurement) {
-                      menu.groceryList[ingredient.name][0]["measurement"] =
-                        ingredient.measurement;
-                    }
-                  } else {
-                    menu.groceryList[ingredient.name] = [{ amount: "some" }];
-                  }
-                }
-              });
+              addToGroceryList(dish);
             }
-
             servings = servings - 2;
             if (servings < 2) {
               used = true;
@@ -131,6 +158,9 @@ async function createMenu(event, context) {
         for (const day in menu.menu) {
           if (menu.menu[day].lunch === "") {
             menu.menu[day].lunch = dish.name;
+            if (dish.ingredients) {
+              addToGroceryList(dish);
+            }
             servings = servings - 2;
             if (servings < 2) {
               used = true;
@@ -146,6 +176,9 @@ async function createMenu(event, context) {
         for (const day in menu.menu) {
           if (menu.menu[day].dinner === "") {
             menu.menu[day].dinner = dish.name;
+            if (dish.ingredients) {
+              addToGroceryList(dish);
+            }
             servings = servings - 2;
             if (servings < 2) {
               used = true;
