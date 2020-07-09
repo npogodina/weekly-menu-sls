@@ -117,7 +117,6 @@ async function createMenu(event, context) {
           }
         });
         if (!added && ingredient.amount) {
-          //
           let addOn = { amount: ingredient.amount };
           if (ingredient.measurement) {
             addOn["measurement"] = ingredient.measurement;
@@ -134,10 +133,6 @@ async function createMenu(event, context) {
           ]["for"] = [dish.name];
           added = true;
         }
-        // menu.groceryList[ingredient.name][
-        //   menu.groceryList[ingredient.name].length - 1
-        // ]["for"] = [dish.name];
-        // added = true;
       } else {
         if (ingredient.amount) {
           menu.groceryList[ingredient.name] = [{ amount: ingredient.amount }];
