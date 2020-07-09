@@ -83,15 +83,23 @@ async function createMenu(event, context) {
     dish.ingredients.forEach((ingredient) => {
       if (menu.groceryList[ingredient.name]) {
         menu.groceryList[ingredient.name].forEach((amountInfo) => {
+          let alreadyIn = false;
+          amountInfo.for.forEach((dishName) => {
+            if (dishName === dish.name) {
+              alreadyIn = true;
+            }
+          });
+          !alreadyIn && amountInfo.for.push(dish.name);
+
           if (!ingredient.amount && amountInfo.amount === "some") {
-            amountInfo.for.push(dish.name);
+            console.log("ingredient with no amount"); // remove
           } else if (
             ingredient.amount &&
             !ingredient.measurement &&
             amountInfo.amount &&
             !amountInfo.measurement
           ) {
-            amountInfo.for.push(dish.name);
+            // amountInfo.for.push(dish.name);
             amountInfo["comment"] = "Need to sum ingredients";
           } else if (
             ingredient.amount &&
@@ -99,7 +107,7 @@ async function createMenu(event, context) {
             amountInfo.amount &&
             amountInfo.measurement === ingredient.measurement
           ) {
-            amountInfo.for.push(dish.name);
+            // amountInfo.for.push(dish.name);
             amountInfo["comment"] = "Need to sum ingredients";
           } else {
             if (ingredient.amount) {
