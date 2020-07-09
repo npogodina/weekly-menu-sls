@@ -92,14 +92,26 @@ async function createMenu(event, context) {
               dish.ingredients.forEach((ingredient) => {
                 if (menu.groceryList[ingredient.name]) {
                   if (ingredient.amount) {
-                    menu.groceryList[ingredient.name].push({
-                      amount: ingredient.amount,
-                    });
+                    let addOn = { amount: ingredient.amount };
+                    if (ingredient.measurement) {
+                      addOn["measurement"] = ingredient.measurement;
+                    }
+                    menu.groceryList[ingredient.name].push(addOn);
+                  } else {
+                    menu.groceryList[ingredient.name].push({ amount: "some" });
                   }
                 } else {
-                  menu.groceryList[ingredient.name] = [
-                    // { amount: ingredient.amount },
-                  ];
+                  if (ingredient.amount) {
+                    menu.groceryList[ingredient.name] = [
+                      { amount: ingredient.amount },
+                    ];
+                    if (ingredient.measurement) {
+                      menu.groceryList[ingredient.name][0]["measurement"] =
+                        ingredient.measurement;
+                    }
+                  } else {
+                    menu.groceryList[ingredient.name] = [{ amount: "some" }];
+                  }
                 }
               });
             }
