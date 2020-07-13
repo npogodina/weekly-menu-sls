@@ -77,6 +77,7 @@ async function createMenu(event, context) {
       [dates[6]]: { breakfast: "", lunch: "", dinner: "" },
     },
     groceryList: {},
+    groceryListText: [],
   };
 
   const addToGroceryList = (dish) => {
@@ -223,6 +224,26 @@ async function createMenu(event, context) {
         filled = false;
       }
     }
+  }
+
+  // Restructure grocery list output for frontend
+  for (const item in menu.groceryList) {
+    menu.groceryList[item].forEach((amountInfo) => {
+      let main = "";
+      if (amountInfo["amount"]) {
+        main += amountInfo["amount"];
+        main += " ";
+      }
+      if (amountInfo["measurement"]) {
+        main += amountInfo["measurement"];
+        main += " ";
+      }
+      main += item;
+
+      let extra = amountInfo["for"].join(", ");
+      let toAdd = { main: main, for: extra };
+      menu.groceryListText.push(toAdd);
+    });
   }
 
   try {
