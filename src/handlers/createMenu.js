@@ -247,6 +247,18 @@ async function createMenu(event, context) {
     });
   }
 
+  // Sort groceryListText
+  let sortedGroceryListText = menu.groceryListText.sort((a, b) => {
+    if (a.main.toUpperCase() < b.main.toUpperCase()) {
+      return -1;
+    }
+    if (a.main.toUpperCase() > b.main.toUpperCase()) {
+      return 1;
+    }
+    return 0;
+  });
+  menu.groceryListText = sortedGroceryListText;
+
   try {
     await dynamodb
       .put({
