@@ -157,9 +157,6 @@ async function createMenu(event, context) {
         for (const day in menu.menu) {
           if (menu.menu[day].breakfast === "") {
             menu.menu[day].breakfast = dish.name;
-            if (dish.ingredients) {
-              addToGroceryList(dish);
-            }
             servings = servings - 2;
             if (servings < 2) {
               used = true;
@@ -169,15 +166,15 @@ async function createMenu(event, context) {
         }
       }
       if (used) {
+        if (dish.ingredients) {
+          addToGroceryList(dish);
+        }
         return;
       }
       if (dish.lunch === "y") {
         for (const day in menu.menu) {
           if (menu.menu[day].lunch === "") {
             menu.menu[day].lunch = dish.name;
-            if (dish.ingredients) {
-              addToGroceryList(dish);
-            }
             servings = servings - 2;
             if (servings < 2) {
               used = true;
@@ -187,15 +184,15 @@ async function createMenu(event, context) {
         }
       }
       if (used) {
+        if (dish.ingredients) {
+          addToGroceryList(dish);
+        }
         return;
       }
       if (dish.dinner === "y") {
         for (const day in menu.menu) {
           if (menu.menu[day].dinner === "") {
             menu.menu[day].dinner = dish.name;
-            if (dish.ingredients) {
-              addToGroceryList(dish);
-            }
             servings = servings - 2;
             if (servings < 2) {
               used = true;
@@ -203,6 +200,12 @@ async function createMenu(event, context) {
             }
           }
         }
+      }
+      if (used) {
+        if (dish.ingredients) {
+          addToGroceryList(dish);
+        }
+        return;
       }
     });
   };
