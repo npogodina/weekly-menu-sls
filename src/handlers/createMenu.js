@@ -80,11 +80,14 @@ async function createMenu(event, context) {
     groceryListText: [],
   };
 
+  // Helper method to add ingredients to grocery list
   const addToGroceryList = (dish) => {
     dish.ingredients.forEach((ingredient) => {
+      // if ingredient already exists in grocery list
       if (menu.groceryList[ingredient.name]) {
         let added = false;
         menu.groceryList[ingredient.name].forEach((amountInfo) => {
+          // dish name shouldn't be added if duplicate dish
           let alreadyIn = false;
           amountInfo.for.forEach((dishName) => {
             if (dishName === dish.name) {
@@ -92,9 +95,11 @@ async function createMenu(event, context) {
             }
           });
 
+          // if no amount
           if (!added && !ingredient.amount && amountInfo.amount === "some") {
             !alreadyIn && amountInfo.for.push(dish.name);
             added = true;
+            // if no amount or same measurement
           } else if (
             (!added &&
               ingredient.amount &&
@@ -111,12 +116,14 @@ async function createMenu(event, context) {
             const amountToAdd = Number(ingredient.amount);
             if (existingAmount && amountToAdd) {
               amountInfo.amount = existingAmount + amountToAdd;
-              amountInfo["comment"] = "Sumed up the ingredients";
+              amountInfo["comment"] = "Summed up the ingredients";
             }
             !alreadyIn && amountInfo.for.push(dish.name);
             added = true;
           }
         });
+
+        // if different measurements
         if (!added && ingredient.amount) {
           let addOn = { amount: ingredient.amount };
           if (ingredient.measurement) {
@@ -134,6 +141,8 @@ async function createMenu(event, context) {
           ]["for"] = [dish.name];
           added = true;
         }
+
+        // if ingredient doesn't exist in grocery list
       } else {
         if (ingredient.amount) {
           menu.groceryList[ingredient.name] = [{ amount: ingredient.amount }];
@@ -141,6 +150,7 @@ async function createMenu(event, context) {
             menu.groceryList[ingredient.name][0]["measurement"] =
               ingredient.measurement;
           }
+          // if no amount, replace with some
         } else {
           menu.groceryList[ingredient.name] = [{ amount: "some" }];
         }
@@ -149,6 +159,7 @@ async function createMenu(event, context) {
     });
   };
 
+  // Helper method to add dishes to menu
   const addDishes = () => {
     shuffledDishes.forEach((dish) => {
       let used = false;
@@ -211,6 +222,7 @@ async function createMenu(event, context) {
     });
   };
 
+  // Generating menu
   let filled = false;
   while (!filled) {
     filled = true;
