@@ -230,15 +230,16 @@ async function createMenu(event, context) {
   for (const item in menu.groceryList) {
     menu.groceryList[item].forEach((amountInfo) => {
       let main = "";
+      main += item;
+
       if (amountInfo["amount"]) {
+        main += ": ";
         main += amountInfo["amount"];
-        main += " ";
       }
       if (amountInfo["measurement"]) {
-        main += amountInfo["measurement"];
         main += " ";
+        main += amountInfo["measurement"];
       }
-      main += item;
 
       let extra = amountInfo["for"].join(", ");
       let toAdd = { main: main, for: extra };
