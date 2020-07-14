@@ -47,9 +47,9 @@ functions:
     events:
       - http:
           method: GET
-          path: /dishes/{id}/{name}
+          path: /dishes/{id}
           cors: true
-          authorizer: ${self:custom.authorizer}
+          # authorizer: ${self:custom.authorizer}
 
   deleteDish:
     handler: src/handlers/deleteDish.handler
