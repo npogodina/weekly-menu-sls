@@ -7,3 +7,7 @@ DishesTableIAM:
     - dynamodb:*
   Resource:
     - ${self:custom.DishesTable.arn}
+    - !Join [
+        "/",
+        ["${self:custom.DishesTable.arn}", "index", "dishIdGlobalIndex"],
+      ]
