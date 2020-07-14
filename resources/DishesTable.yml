@@ -10,6 +10,8 @@ DishesTable:
         AttributeType: S
       - AttributeName: timestamp
         AttributeType: S
+      - AttributeName: dishId
+        AttributeType: S
 
       - AttributeName: breakfast
         AttributeType: S
@@ -25,6 +27,14 @@ DishesTable:
         KeyType: HASH
       - AttributeName: name
         KeyType: RANGE
+
+    GlobalSecondaryIndexes:
+      - IndexName: dishIdGlobalIndex
+        KeySchema:
+          - AttributeName: dishId
+            KeyType: HASH
+        Projection:
+          ProjectionType: ALL
 
     LocalSecondaryIndexes:
       - IndexName: UserIdTimestampIndex

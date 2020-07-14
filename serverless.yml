@@ -51,6 +51,15 @@ functions:
           cors: true
           authorizer: ${self:custom.authorizer}
 
+  deleteDish:
+    handler: src/handlers/deleteDish.handler
+    events:
+      - http:
+          method: DELETE
+          path: /dishes/{id}
+          cors: true
+          # authorizer: ${self:custom.authorizer}
+
   createMenu:
     handler: src/handlers/createMenu.handler
     events:
