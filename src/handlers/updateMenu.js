@@ -106,144 +106,54 @@ async function updateMenu(event, context) {
     });
   };
 
-  // Needs refactor
-  // Throws "can not use keyword ‘await’ outside an async function” error" when using a helper method
-  // Breakfast:
-  // const checkServingsAndIngredients = async (meal) => {
-  let servings = 0;
-  let dish = null;
-  for (let day in dates) {
-    if (menu.menu[dates[day]]["breakfast"]) {
-      if (
-        servings < 2 ||
-        (day !== 0 &&
-          menu.menu[dates[day]]["breakfast"] !==
-            menu.menu[dates[day - 1]]["breakfast"])
-      ) {
-        console.log(menu.menu);
-        console.log(menu.menu[dates[day]]["breakfast"]);
-        // Get next dish info from Dynamodb
-        try {
-          const result = await dynamodb
-            .get({
-              TableName: process.env.DISHES_TABLE_NAME,
-              Key: {
-                userId: userId,
-                name: menu.menu[dates[day]]["breakfast"],
-              },
-            })
-            .promise();
-          dish = result.Item;
-          servings = result.Item.servings;
-        } catch (error) {
-          console.error(error);
-          throw new createError.InternalServerError(error);
+  // Helper method to get servings & ingredients data for all dishes from the menu
+  const checkServingsAndIngredients = async (meal) => {
+    let servings = 0;
+    let dish = null;
+    for (let day in dates) {
+      if (menu.menu[dates[day]][meal]) {
+        if (
+          servings < 2 ||
+          (day !== 0 &&
+            menu.menu[dates[day]][meal] !== menu.menu[dates[day - 1]][meal])
+        ) {
+          console.log(menu.menu);
+          console.log(menu.menu[dates[day]][meal]);
+          // Get next dish info from Dynamodb
+          try {
+            const result = await dynamodb
+              .get({
+                TableName: process.env.DISHES_TABLE_NAME,
+                Key: {
+                  userId: userId,
+                  name: menu.menu[dates[day]][meal],
+                },
+              })
+              .promise();
+            dish = result.Item;
+            servings = result.Item.servings;
+          } catch (error) {
+            console.error(error);
+            throw new createError.InternalServerError(error);
+          }
+
+          if (!dish) {
+            throw new createError.NotFound(`Dish not found`);
+          }
+
+          // Add ingridients of the newly fetched dish
+          addToGroceryList(dish);
         }
 
-        if (!dish) {
-          throw new createError.NotFound(`Dish not found`);
-        }
-
-        // Add ingridients of the newly fetched dish
-        addToGroceryList(dish);
+        // Else decrese servings
+        servings -= 2;
       }
-
-      // Else decrese servings
-      servings -= 2;
     }
-  }
-  // };
+  };
 
-  // Lunch:
-  servings = 0;
-  dish = null;
-  for (let day in dates) {
-    if (menu.menu[dates[day]]["lunch"]) {
-      if (
-        servings < 2 ||
-        (day !== 0 &&
-          menu.menu[dates[day]]["lunch"] !== menu.menu[dates[day - 1]]["lunch"])
-      ) {
-        console.log(menu.menu);
-        console.log(menu.menu[dates[day]]["lunch"]);
-        // Get next dish info from Dynamodb
-        try {
-          const result = await dynamodb
-            .get({
-              TableName: process.env.DISHES_TABLE_NAME,
-              Key: {
-                userId: userId,
-                name: menu.menu[dates[day]]["lunch"],
-              },
-            })
-            .promise();
-          dish = result.Item;
-          servings = result.Item.servings;
-        } catch (error) {
-          console.error(error);
-          throw new createError.InternalServerError(error);
-        }
-
-        if (!dish) {
-          throw new createError.NotFound(`Dish not found`);
-        }
-
-        // Add ingridients of the newly fetched dish
-        addToGroceryList(dish);
-      }
-
-      // Else decrese servings
-      servings -= 2;
-    }
-  }
-
-  // Dinner:
-  servings = 0;
-  dish = null;
-  for (let day in dates) {
-    if (menu.menu[dates[day]]["dinner"]) {
-      if (
-        servings < 2 ||
-        (day !== 0 &&
-          menu.menu[dates[day]]["dinner"] !==
-            menu.menu[dates[day - 1]]["dinner"])
-      ) {
-        console.log(menu.menu);
-        console.log(menu.menu[dates[day]]["dinner"]);
-        // Get next dish info from Dynamodb
-        try {
-          const result = await dynamodb
-            .get({
-              TableName: process.env.DISHES_TABLE_NAME,
-              Key: {
-                userId: userId,
-                name: menu.menu[dates[day]]["dinner"],
-              },
-            })
-            .promise();
-          dish = result.Item;
-          servings = result.Item.servings;
-        } catch (error) {
-          console.error(error);
-          throw new createError.InternalServerError(error);
-        }
-
-        if (!dish) {
-          throw new createError.NotFound(`Dish not found`);
-        }
-
-        // Add ingridients of the newly fetched dish
-        addToGroceryList(dish);
-      }
-
-      // Else decrese servings
-      servings -= 2;
-    }
-  }
-
-  // checkServingsAndIngredients("breakfast");
-  // checkServingsAndIngredients("lunch");
-  // checkServingsAndIngredients("dinner");
+  await checkServingsAndIngredients("breakfast");
+  await checkServingsAndIngredients("lunch");
+  await checkServingsAndIngredients("dinner");
 
   // Restructure grocery list output for frontend
   for (const item in menu.groceryList) {
