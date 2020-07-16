@@ -238,38 +238,38 @@ async function updateMenu(event, context) {
   // checkServingsAndIngredients("lunch");
   // checkServingsAndIngredients("dinner");
 
-  // // Restructure grocery list output for frontend
-  // for (const item in menu.groceryList) {
-  //   menu.groceryList[item].forEach((amountInfo) => {
-  //     let main = "";
-  //     main += item;
+  // Restructure grocery list output for frontend
+  for (const item in menu.groceryList) {
+    menu.groceryList[item].forEach((amountInfo) => {
+      let main = "";
+      main += item;
 
-  //     if (amountInfo["amount"]) {
-  //       main += ": ";
-  //       main += amountInfo["amount"];
-  //     }
-  //     if (amountInfo["measurement"]) {
-  //       main += " ";
-  //       main += amountInfo["measurement"];
-  //     }
+      if (amountInfo["amount"]) {
+        main += ": ";
+        main += amountInfo["amount"];
+      }
+      if (amountInfo["measurement"]) {
+        main += " ";
+        main += amountInfo["measurement"];
+      }
 
-  //     let extra = amountInfo["for"].join(", ");
-  //     let toAdd = { main: main, for: extra };
-  //     menu.groceryListText.push(toAdd);
-  //   });
-  // }
+      let extra = amountInfo["for"].join(", ");
+      let toAdd = { main: main, for: extra };
+      menu.groceryListText.push(toAdd);
+    });
+  }
 
-  // // Sort groceryListText
-  // let sortedGroceryListText = menu.groceryListText.sort((a, b) => {
-  //   if (a.main.toUpperCase() < b.main.toUpperCase()) {
-  //     return -1;
-  //   }
-  //   if (a.main.toUpperCase() > b.main.toUpperCase()) {
-  //     return 1;
-  //   }
-  //   return 0;
-  // });
-  // menu.groceryListText = sortedGroceryListText;
+  // Sort groceryListText
+  let sortedGroceryListText = menu.groceryListText.sort((a, b) => {
+    if (a.main.toUpperCase() < b.main.toUpperCase()) {
+      return -1;
+    }
+    if (a.main.toUpperCase() > b.main.toUpperCase()) {
+      return 1;
+    }
+    return 0;
+  });
+  menu.groceryListText = sortedGroceryListText;
 
   try {
     await dynamodb
