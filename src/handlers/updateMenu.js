@@ -6,38 +6,134 @@ import commonMiddleware from "../lib/commonMiddleware";
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 
 async function updateMenu(event, context) {
-  const { userId, startDate, menu } = event.body;
+  const { userId, startDate, updatedMenu } = event.body;
   const now = new Date();
 
-  const updatedMenu = {
+  const menu = {
     userId,
     startDate,
     timestamp: now.toISOString(),
     menuId: uuid(),
-    menu,
-    // groceryList: {},
+    menu: updatedMenu,
+    groceryList: {},
     groceryListText: [],
   };
 
-  for (const day in menu) {
-    for (const meal in menu[day]) {
-      let dish = null;
-      console.log(userId);
-      console.log(menu[day][meal]);
+  const dates = [menu.startDate];
+  for (let i = 1; i < 7; i++) {
+    let day = new Date(menu.startDate);
+    day.setDate(day.getDate() + i);
+    dates.push(day.toISOString());
+  }
+  console.log(dates);
+
+  // Helper method to add ingredients to grocery list
+  const addToGroceryList = (dish) => {
+    dish.ingredients.forEach((ingredient) => {
+      // if ingredient already exists in grocery list
+      if (menu.groceryList[ingredient.name]) {
+        let added = false;
+        menu.groceryList[ingredient.name].forEach((amountInfo) => {
+          // dish name shouldn't be added if duplicate dish
+          let alreadyIn = false;
+          amountInfo.for.forEach((dishName) => {
+            if (dishName === dish.name) {
+              alreadyIn = true;
+            }
+          });
+
+          // if no amount
+          if (!added && !ingredient.amount && amountInfo.amount === "some") {
+            !alreadyIn && amountInfo.for.push(dish.name);
+            added = true;
+            // if no amount or same measurement
+          } else if (
+            (!added &&
+              ingredient.amount &&
+              !ingredient.measurement &&
+              amountInfo.amount &&
+              !amountInfo.measurement) ||
+            (!added &&
+              ingredient.amount &&
+              ingredient.measurement &&
+              amountInfo.amount &&
+              amountInfo.measurement === ingredient.measurement)
+          ) {
+            const existingAmount = Number(amountInfo.amount);
+            const amountToAdd = Number(ingredient.amount);
+            if (existingAmount && amountToAdd) {
+              amountInfo.amount = existingAmount + amountToAdd;
+              amountInfo["comment"] = "Summed up the ingredients";
+            }
+            !alreadyIn && amountInfo.for.push(dish.name);
+            added = true;
+          }
+        });
+
+        // if different measurements
+        if (!added && ingredient.amount) {
+          let addOn = { amount: ingredient.amount };
+          if (ingredient.measurement) {
+            addOn["measurement"] = ingredient.measurement;
+          }
+          menu.groceryList[ingredient.name].push(addOn);
+          menu.groceryList[ingredient.name][
+            menu.groceryList[ingredient.name].length - 1
+          ]["for"] = [dish.name];
+          added = true;
+        } else if (!added) {
+          menu.groceryList[ingredient.name].push({ amount: "some" });
+          menu.groceryList[ingredient.name][
+            menu.groceryList[ingredient.name].length - 1
+          ]["for"] = [dish.name];
+          added = true;
+        }
+
+        // if ingredient doesn't exist in grocery list
+      } else {
+        if (ingredient.amount) {
+          menu.groceryList[ingredient.name] = [{ amount: ingredient.amount }];
+          if (ingredient.measurement) {
+            menu.groceryList[ingredient.name][0]["measurement"] =
+              ingredient.measurement;
+          }
+          // if no amount, replace with some
+        } else {
+          menu.groceryList[ingredient.name] = [{ amount: "some" }];
+        }
+        menu.groceryList[ingredient.name][0]["for"] = [dish.name];
+      }
+    });
+  };
+
+  // Needs refactor
+  // Throws "can not use keyword ‘await’ outside an async function” error" when using a helper method
+  // Breakfast:
+  // const checkServingsAndIngredients = async (meal) => {
+  let servings = 0;
+  let dish = null;
+  for (let day in dates) {
+    if (
+      servings < 2 ||
+      (day !== 0 &&
+        menu.menu[dates[day]]["breakfast"] !==
+          menu.menu[dates[day - 1]]["breakfast"])
+    ) {
+      console.log(menu.menu);
+      console.log(menu.menu[dates[day]]["breakfast"]);
+      // Get next dish info from Dynamodb
       try {
         const result = await dynamodb
           .get({
             TableName: process.env.DISHES_TABLE_NAME,
             Key: {
               userId: userId,
-              name: menu[day][meal],
+              name: menu.menu[dates[day]]["breakfast"],
             },
           })
           .promise();
         dish = result.Item;
-        console.log(dish);
-
-        updatedMenu.groceryListText.push(dish.name);
+        servings = result.Item.servings;
       } catch (error) {
         console.error(error);
         throw new createError.InternalServerError(error);
@@ -46,166 +142,101 @@ async function updateMenu(event, context) {
       if (!dish) {
         throw new createError.NotFound(`Dish not found`);
       }
+
+      // Add ingridients of the newly fetched dish
+      addToGroceryList(dish);
     }
+
+    // Else decrese servings
+    servings -= 2;
+  }
+  // };
+
+  // Lunch:
+  servings = 0;
+  dish = null;
+  for (let day in dates) {
+    if (
+      servings < 2 ||
+      (day !== 0 &&
+        menu.menu[dates[day]]["lunch"] !== menu.menu[dates[day - 1]]["lunch"])
+    ) {
+      console.log(menu.menu);
+      console.log(menu.menu[dates[day]]["lunch"]);
+      // Get next dish info from Dynamodb
+      try {
+        const result = await dynamodb
+          .get({
+            TableName: process.env.DISHES_TABLE_NAME,
+            Key: {
+              userId: userId,
+              name: menu.menu[dates[day]]["lunch"],
+            },
+          })
+          .promise();
+        dish = result.Item;
+        servings = result.Item.servings;
+      } catch (error) {
+        console.error(error);
+        throw new createError.InternalServerError(error);
+      }
+
+      if (!dish) {
+        throw new createError.NotFound(`Dish not found`);
+      }
+
+      // Add ingridients of the newly fetched dish
+      addToGroceryList(dish);
+    }
+
+    // Else decrese servings
+    servings -= 2;
   }
 
-  // // Helper method to add ingredients to grocery list
-  // const addToGroceryList = (dish) => {
-  //   dish.ingredients.forEach((ingredient) => {
-  //     // if ingredient already exists in grocery list
-  //     if (menu.groceryList[ingredient.name]) {
-  //       let added = false;
-  //       menu.groceryList[ingredient.name].forEach((amountInfo) => {
-  //         // dish name shouldn't be added if duplicate dish
-  //         let alreadyIn = false;
-  //         amountInfo.for.forEach((dishName) => {
-  //           if (dishName === dish.name) {
-  //             alreadyIn = true;
-  //           }
-  //         });
+  // Dinner:
+  servings = 0;
+  dish = null;
+  for (let day in dates) {
+    if (
+      servings < 2 ||
+      (day !== 0 &&
+        menu.menu[dates[day]]["dinner"] !== menu.menu[dates[day - 1]]["dinner"])
+    ) {
+      console.log(menu.menu);
+      console.log(menu.menu[dates[day]]["dinner"]);
+      // Get next dish info from Dynamodb
+      try {
+        const result = await dynamodb
+          .get({
+            TableName: process.env.DISHES_TABLE_NAME,
+            Key: {
+              userId: userId,
+              name: menu.menu[dates[day]]["dinner"],
+            },
+          })
+          .promise();
+        dish = result.Item;
+        servings = result.Item.servings;
+      } catch (error) {
+        console.error(error);
+        throw new createError.InternalServerError(error);
+      }
 
-  //         // if no amount
-  //         if (!added && !ingredient.amount && amountInfo.amount === "some") {
-  //           !alreadyIn && amountInfo.for.push(dish.name);
-  //           added = true;
-  //           // if no amount or same measurement
-  //         } else if (
-  //           (!added &&
-  //             ingredient.amount &&
-  //             !ingredient.measurement &&
-  //             amountInfo.amount &&
-  //             !amountInfo.measurement) ||
-  //           (!added &&
-  //             ingredient.amount &&
-  //             ingredient.measurement &&
-  //             amountInfo.amount &&
-  //             amountInfo.measurement === ingredient.measurement)
-  //         ) {
-  //           const existingAmount = Number(amountInfo.amount);
-  //           const amountToAdd = Number(ingredient.amount);
-  //           if (existingAmount && amountToAdd) {
-  //             amountInfo.amount = existingAmount + amountToAdd;
-  //             amountInfo["comment"] = "Summed up the ingredients";
-  //           }
-  //           !alreadyIn && amountInfo.for.push(dish.name);
-  //           added = true;
-  //         }
-  //       });
+      if (!dish) {
+        throw new createError.NotFound(`Dish not found`);
+      }
 
-  //       // if different measurements
-  //       if (!added && ingredient.amount) {
-  //         let addOn = { amount: ingredient.amount };
-  //         if (ingredient.measurement) {
-  //           addOn["measurement"] = ingredient.measurement;
-  //         }
-  //         menu.groceryList[ingredient.name].push(addOn);
-  //         menu.groceryList[ingredient.name][
-  //           menu.groceryList[ingredient.name].length - 1
-  //         ]["for"] = [dish.name];
-  //         added = true;
-  //       } else if (!added) {
-  //         menu.groceryList[ingredient.name].push({ amount: "some" });
-  //         menu.groceryList[ingredient.name][
-  //           menu.groceryList[ingredient.name].length - 1
-  //         ]["for"] = [dish.name];
-  //         added = true;
-  //       }
+      // Add ingridients of the newly fetched dish
+      addToGroceryList(dish);
+    }
 
-  //       // if ingredient doesn't exist in grocery list
-  //     } else {
-  //       if (ingredient.amount) {
-  //         menu.groceryList[ingredient.name] = [{ amount: ingredient.amount }];
-  //         if (ingredient.measurement) {
-  //           menu.groceryList[ingredient.name][0]["measurement"] =
-  //             ingredient.measurement;
-  //         }
-  //         // if no amount, replace with some
-  //       } else {
-  //         menu.groceryList[ingredient.name] = [{ amount: "some" }];
-  //       }
-  //       menu.groceryList[ingredient.name][0]["for"] = [dish.name];
-  //     }
-  //   });
-  // };
+    // Else decrese servings
+    servings -= 2;
+  }
 
-  // // Helper method to add dishes to menu
-  // const addDishes = () => {
-  //   shuffledDishes.forEach((dish) => {
-  //     let used = false;
-  //     let servings = dish.servings;
-
-  //     if (dish.breakfast === "y") {
-  //       for (const day in menu.menu) {
-  //         if (menu.menu[day].breakfast === "") {
-  //           menu.menu[day].breakfast = dish.name;
-  //           servings = servings - 2;
-  //           if (servings < 2) {
-  //             used = true;
-  //             break;
-  //           }
-  //         }
-  //       }
-  //     }
-  //     if (used) {
-  //       if (dish.ingredients) {
-  //         addToGroceryList(dish);
-  //       }
-  //       return;
-  //     }
-  //     if (dish.lunch === "y") {
-  //       for (const day in menu.menu) {
-  //         if (menu.menu[day].lunch === "") {
-  //           menu.menu[day].lunch = dish.name;
-  //           servings = servings - 2;
-  //           if (servings < 2) {
-  //             used = true;
-  //             break;
-  //           }
-  //         }
-  //       }
-  //     }
-  //     if (used) {
-  //       if (dish.ingredients) {
-  //         addToGroceryList(dish);
-  //       }
-  //       return;
-  //     }
-  //     if (dish.dinner === "y") {
-  //       for (const day in menu.menu) {
-  //         if (menu.menu[day].dinner === "") {
-  //           menu.menu[day].dinner = dish.name;
-  //           servings = servings - 2;
-  //           if (servings < 2) {
-  //             used = true;
-  //             break;
-  //           }
-  //         }
-  //       }
-  //     }
-  //     if (used) {
-  //       if (dish.ingredients) {
-  //         addToGroceryList(dish);
-  //       }
-  //       return;
-  //     }
-  //   });
-  // };
-
-  // // Generating menu
-  // let filled = false;
-  // while (!filled) {
-  //   filled = true;
-  //   addDishes();
-  //   for (const day in menu.menu) {
-  //     if (
-  //       menu.menu[day].breakfast === "" ||
-  //       menu.menu[day].lunch === "" ||
-  //       menu.menu[day].dinner === ""
-  //     ) {
-  //       filled = false;
-  //     }
-  //   }
-  // }
+  // checkServingsAndIngredients("breakfast");
+  // checkServingsAndIngredients("lunch");
+  // checkServingsAndIngredients("dinner");
 
   // // Restructure grocery list output for frontend
   // for (const item in menu.groceryList) {
@@ -244,7 +275,7 @@ async function updateMenu(event, context) {
     await dynamodb
       .put({
         TableName: process.env.MENUS_TABLE_NAME,
-        Item: updatedMenu,
+        Item: menu,
       })
       .promise();
   } catch (error) {
@@ -254,7 +285,7 @@ async function updateMenu(event, context) {
 
   return {
     statusCode: 201,
-    body: JSON.stringify(updatedMenu),
+    body: JSON.stringify(menu),
   };
 }
 
