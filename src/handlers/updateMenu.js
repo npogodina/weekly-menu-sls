@@ -9,27 +9,6 @@ async function updateMenu(event, context) {
   const { userId, startDate, menu } = event.body;
   const now = new Date();
 
-  // try {
-  //   const result = await dynamodb
-  //     .get({
-  //       TableName: process.env.DISHES_TABLE_NAME,
-  //       Key: {
-  //         userId: id,
-  //         name: name,
-  //       },
-  //     })
-  //     .promise();
-
-  //   dish = result.Item;
-  // } catch (error) {
-  //   console.error(error);
-  //   throw new createError.InternalServerError(error);
-  // }
-
-  // if (!dish) {
-  //   throw new createError.NotFound(`Dish not found`);
-  // }
-
   const updatedMenu = {
     userId,
     startDate,
@@ -37,8 +16,38 @@ async function updateMenu(event, context) {
     menuId: uuid(),
     menu,
     // groceryList: {},
-    // groceryListText: [],
+    groceryListText: [],
   };
+
+  for (const day in menu) {
+    for (const meal in menu[day]) {
+      let dish = null;
+      console.log(userId);
+      console.log(menu[day][meal]);
+      try {
+        const result = await dynamodb
+          .get({
+            TableName: process.env.DISHES_TABLE_NAME,
+            Key: {
+              userId: userId,
+              name: menu[day][meal],
+            },
+          })
+          .promise();
+        dish = result.Item;
+        console.log(dish);
+
+        updatedMenu.groceryListText.push(dish.name);
+      } catch (error) {
+        console.error(error);
+        throw new createError.InternalServerError(error);
+      }
+
+      if (!dish) {
+        throw new createError.NotFound(`Dish not found`);
+      }
+    }
+  }
 
   // // Helper method to add ingredients to grocery list
   // const addToGroceryList = (dish) => {
