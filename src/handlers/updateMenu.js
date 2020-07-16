@@ -202,7 +202,7 @@ async function updateMenu(event, context) {
 
   return {
     statusCode: 201,
-    body: JSON.stringify(menu),
+    body: JSON.stringify(menu.menuId),
   };
 }
 
