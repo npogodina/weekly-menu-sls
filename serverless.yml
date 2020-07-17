@@ -103,6 +103,15 @@ functions:
           cors: true
           # authorizer: ${self:custom.authorizer}
 
+  updateGroceryList:
+    handler: src/handlers/updateGroceryList.handler
+    events:
+      - http:
+          method: PATCH
+          path: /menus/{menuId}
+          cors: true
+          # authorizer: ${self:custom.authorizer}
+
 custom:
   authorizer: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:weekly-menu-auth-service-${self:provider.stage}-auth
   DishesTable:
