@@ -6,12 +6,13 @@ import commonMiddleware from "../lib/commonMiddleware";
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 
 async function updateMenu(event, context) {
-  const { userId, startDate, updatedMenu } = event.body;
+  const { userId, startDate, familySize, updatedMenu } = event.body;
   const now = new Date();
 
   const menu = {
     userId,
     startDate,
+    familySize,
     timestamp: now.toISOString(),
     menuId: uuid(),
     menu: updatedMenu,
