@@ -169,16 +169,26 @@ async function createMenu(event, context) {
 
       if (dish.servings >= eaters) {
         if (dish.breakfast === "y") {
+          let complete = true; // check if breakfasts are done so that the dish won't get used
           for (const day in menu.menu) {
             if (menu.menu[day].breakfast === "") {
-              menu.menu[day].breakfast = dish.name;
-              servings = servings - eaters;
-              if (servings < eaters) {
+              complete = false;
+              break;
+            }
+          }
+          // ? V need rewrite using dates array to keep order
+          if (!complete) {
+            for (const day in menu.menu) {
+              if (menu.menu[day].breakfast === "") {
+                menu.menu[day].breakfast = dish.name;
+                servings = servings - eaters;
+                if (servings < eaters) {
+                  used = true;
+                  break;
+                }
+              } else {
                 used = true;
-                break;
               }
-            } else {
-              used = true;
             }
           }
         }
@@ -188,17 +198,27 @@ async function createMenu(event, context) {
           }
           return;
         }
+
         if (dish.lunch === "y") {
+          let complete = true; // check if lunches are done so that the dish won't get used
           for (const day in menu.menu) {
             if (menu.menu[day].lunch === "") {
-              menu.menu[day].lunch = dish.name;
-              servings = servings - eaters;
-              if (servings < eaters) {
+              complete = false;
+              break;
+            }
+          }
+          if (!complete) {
+            for (const day in menu.menu) {
+              if (menu.menu[day].lunch === "") {
+                menu.menu[day].lunch = dish.name;
+                servings = servings - eaters;
+                if (servings < eaters) {
+                  used = true;
+                  break;
+                }
+              } else {
                 used = true;
-                break;
               }
-            } else {
-              used = true;
             }
           }
         }
@@ -208,17 +228,27 @@ async function createMenu(event, context) {
           }
           return;
         }
+
         if (dish.dinner === "y") {
+          let complete = true; // check if dinners are done so that the dish won't get used
           for (const day in menu.menu) {
             if (menu.menu[day].dinner === "") {
-              menu.menu[day].dinner = dish.name;
-              servings = servings - eaters;
-              if (servings < eaters) {
+              complete = false;
+              break;
+            }
+          }
+          if (!complete) {
+            for (const day in menu.menu) {
+              if (menu.menu[day].dinner === "") {
+                menu.menu[day].dinner = dish.name;
+                servings = servings - eaters;
+                if (servings < eaters) {
+                  used = true;
+                  break;
+                }
+              } else {
                 used = true;
-                break;
               }
-            } else {
-              used = true;
             }
           }
         }
@@ -235,6 +265,8 @@ async function createMenu(event, context) {
   // Generating menu
   let filled = false;
   while (!filled) {
+    console.log(shuffledDishes);
+    console.log(menu);
     filled = true;
     addDishes();
     for (const day in menu.menu) {
