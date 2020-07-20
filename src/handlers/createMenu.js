@@ -79,6 +79,7 @@ async function createMenu(event, context) {
     },
     groceryList: {},
     groceryListText: [],
+    familySize: eaters,
   };
 
   // Helper method to add ingredients to grocery list
