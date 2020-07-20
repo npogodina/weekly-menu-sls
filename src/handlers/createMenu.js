@@ -166,59 +166,67 @@ async function createMenu(event, context) {
       let used = false;
       let servings = dish.servings;
 
-      if (dish.breakfast === "y") {
-        for (const day in menu.menu) {
-          if (menu.menu[day].breakfast === "") {
-            menu.menu[day].breakfast = dish.name;
-            servings = servings - eaters;
-            if (servings < eaters) {
+      if (dish.servings >= eaters) {
+        if (dish.breakfast === "y") {
+          for (const day in menu.menu) {
+            if (menu.menu[day].breakfast === "") {
+              menu.menu[day].breakfast = dish.name;
+              servings = servings - eaters;
+              if (servings < eaters) {
+                used = true;
+                break;
+              }
+            } else {
               used = true;
-              break;
             }
           }
         }
-      }
-      if (used) {
-        if (dish.ingredients) {
-          addToGroceryList(dish);
+        if (used) {
+          if (dish.ingredients) {
+            addToGroceryList(dish);
+          }
+          return;
         }
-        return;
-      }
-      if (dish.lunch === "y") {
-        for (const day in menu.menu) {
-          if (menu.menu[day].lunch === "") {
-            menu.menu[day].lunch = dish.name;
-            servings = servings - eaters;
-            if (servings < eaters) {
+        if (dish.lunch === "y") {
+          for (const day in menu.menu) {
+            if (menu.menu[day].lunch === "") {
+              menu.menu[day].lunch = dish.name;
+              servings = servings - eaters;
+              if (servings < eaters) {
+                used = true;
+                break;
+              }
+            } else {
               used = true;
-              break;
             }
           }
         }
-      }
-      if (used) {
-        if (dish.ingredients) {
-          addToGroceryList(dish);
+        if (used) {
+          if (dish.ingredients) {
+            addToGroceryList(dish);
+          }
+          return;
         }
-        return;
-      }
-      if (dish.dinner === "y") {
-        for (const day in menu.menu) {
-          if (menu.menu[day].dinner === "") {
-            menu.menu[day].dinner = dish.name;
-            servings = servings - eaters;
-            if (servings < eaters) {
+        if (dish.dinner === "y") {
+          for (const day in menu.menu) {
+            if (menu.menu[day].dinner === "") {
+              menu.menu[day].dinner = dish.name;
+              servings = servings - eaters;
+              if (servings < eaters) {
+                used = true;
+                break;
+              }
+            } else {
               used = true;
-              break;
             }
           }
         }
-      }
-      if (used) {
-        if (dish.ingredients) {
-          addToGroceryList(dish);
+        if (used) {
+          if (dish.ingredients) {
+            addToGroceryList(dish);
+          }
+          return;
         }
-        return;
       }
     });
   };
