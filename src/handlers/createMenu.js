@@ -6,9 +6,10 @@ import commonMiddleware from "../lib/commonMiddleware";
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 
 async function createMenu(event, context) {
-  const { userId, startDate } = event.body;
+  const { userId, startDate, familySize } = event.body;
   // const { userId } = event.body;
   // const { sub } = event.requestContext.authorizer;
+  const eaters = Number(familySize);
 
   const now = new Date();
 
@@ -169,8 +170,8 @@ async function createMenu(event, context) {
         for (const day in menu.menu) {
           if (menu.menu[day].breakfast === "") {
             menu.menu[day].breakfast = dish.name;
-            servings = servings - 2;
-            if (servings < 2) {
+            servings = servings - eaters;
+            if (servings < eaters) {
               used = true;
               break;
             }
@@ -187,8 +188,8 @@ async function createMenu(event, context) {
         for (const day in menu.menu) {
           if (menu.menu[day].lunch === "") {
             menu.menu[day].lunch = dish.name;
-            servings = servings - 2;
-            if (servings < 2) {
+            servings = servings - eaters;
+            if (servings < eaters) {
               used = true;
               break;
             }
@@ -205,8 +206,8 @@ async function createMenu(event, context) {
         for (const day in menu.menu) {
           if (menu.menu[day].dinner === "") {
             menu.menu[day].dinner = dish.name;
-            servings = servings - 2;
-            if (servings < 2) {
+            servings = servings - eaters;
+            if (servings < eaters) {
               used = true;
               break;
             }
