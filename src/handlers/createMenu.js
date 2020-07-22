@@ -30,6 +30,8 @@ async function createMenu(event, context) {
     throw new createError.InternalServerError(error);
   }
 
+  // Check for enough dish variety meal-wise
+  let noVariety = false;
   let check = [0, 0, 0];
   dishes.forEach((dish) => {
     if (dish.breakfast === "y") {
@@ -44,9 +46,17 @@ async function createMenu(event, context) {
   });
   check.forEach((num) => {
     if (num === 0) {
-      throw new createError.InternalServerError("Not enough dish variety.");
+      noVariety = true;
+      // throw new createError.InternalServerError("Not enough dish variety.");
     }
   });
+  if (noVariety) {
+    return {
+      statusCode: 400,
+      body:
+        "You don't have dishes to cover all meal types - breakfasts, lunches and dinners, sorry!",
+    };
+  }
 
   let shuffledDishes = dishes;
   for (let i = shuffledDishes.length - 1; i > 0; i--) {
