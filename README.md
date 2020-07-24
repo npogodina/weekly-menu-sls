@@ -1,4 +1,4 @@
-<p align="center"><img src="https://drive.google.com/file/d/1pqObL5YLHgENOpk97cZiUvxb7c2V7Qfz/view?" /></p>
+<p align="center"><img width="400" src="https://live.staticflickr.com/65535/50147918473_b7eec0cc98_o.jpg"/></p>
 
 [Weekly Menu](https://master.dgrpdkkvvvjff.amplifyapp.com/) is a serverless web app that allows registered users to add dishes and makes a weekly menu out of them. The dishes can have optional ingredients. If the ingredients are provided, the app will output a grocery list in addition to the menu. This helps planning meals and making grocery lists.
 
