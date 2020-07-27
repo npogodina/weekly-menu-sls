@@ -4,14 +4,14 @@ import commonMiddleware from "../lib/commonMiddleware";
 
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 
-async function deleteDish(event, context) {
+async function getDish(event, context) {
   let dish;
   console.log(event.pathParameters);
   let { id } = event.pathParameters;
 
   const params = {
-    TableName: process.env.DISHES_TABLE_NAME,
-    IndexName: "dishIdGlobalIndex",
+    TableName: process.env.RECIPES_TABLE_NAME,
+    // IndexName: "dishIdGlobalIndex",
     KeyConditionExpression: "dishId = :hkey",
     ExpressionAttributeValues: {
       ":hkey": id,
@@ -37,7 +37,7 @@ async function deleteDish(event, context) {
   };
 }
 
-export const handler = commonMiddleware(deleteDish);
+export const handler = commonMiddleware(getDish);
 
 ////////////////////////////////////
 // OLD: get dish by userId and name:
