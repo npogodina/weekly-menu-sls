@@ -27,6 +27,14 @@ resources:
     RecipesTable: ${file(resources/RecipesTable.yml):RecipesTable}
 
 functions:
+  dishesMigration:
+    handler: src/handlers/dishesMigration.handler
+    events:
+      - http:
+          method: GET
+          path: /dishes-migration
+          cors: true
+
   createDish:
     handler: src/handlers/createDish.handler
     events:
