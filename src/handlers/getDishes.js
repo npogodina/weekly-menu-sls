@@ -12,8 +12,8 @@ async function getDishes(event, context) {
 
   // const nataliya = "google-oauth2|102165070264738113845";
   const params = {
-    TableName: process.env.DISHES_TABLE_NAME,
-    // IndexName: 'Index',
+    TableName: process.env.RECIPES_TABLE_NAME,
+    IndexName: "userIdGlobalIndex",
     KeyConditionExpression: "userId = :hkey",
     ExpressionAttributeValues: {
       ":hkey": userId,
