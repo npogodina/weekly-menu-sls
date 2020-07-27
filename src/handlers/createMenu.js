@@ -15,7 +15,8 @@ async function createMenu(event, context) {
 
   let dishes;
   const params = {
-    TableName: process.env.DISHES_TABLE_NAME,
+    TableName: process.env.RECIPES_TABLE_NAME,
+    IndexName: "userIdGlobalIndex",
     KeyConditionExpression: "userId = :hkey",
     ExpressionAttributeValues: {
       ":hkey": userId,
