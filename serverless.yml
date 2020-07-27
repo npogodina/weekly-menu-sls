@@ -14,14 +14,17 @@ provider:
   environment:
     DISHES_TABLE_NAME: ${self:custom.DishesTable.name}
     MENUS_TABLE_NAME: ${self:custom.MenusTable.name}
+    RECIPES_TABLE_NAME: ${self:custom.RecipesTable.name}
   iamRoleStatements:
     - ${file(iam/DishesTableIAM.yml):DishesTableIAM}
     - ${file(iam/MenusTableIAM.yml):MenusTableIAM}
+    - ${file(iam/RecipesTableIAM.yml):RecipesTableIAM}
 
 resources:
   Resources:
     DishesTable: ${file(resources/DishesTable.yml):DishesTable}
     MenusTable: ${file(resources/MenusTable.yml):MenusTable}
+    RecipesTable: ${file(resources/RecipesTable.yml):RecipesTable}
 
 functions:
   createDish:
@@ -120,3 +123,6 @@ custom:
   MenusTable:
     name: !Ref MenusTable
     arn: !GetAtt MenusTable.Arn
+  RecipesTable:
+    name: !Ref RecipesTable
+    arn: !GetAtt RecipesTable.Arn

@@ -1,0 +1,26 @@
+RecipesTable:
+  Type: AWS::DynamoDB::Table
+  Properties:
+    TableName: RecipesTable-${self:provider.stage}
+    BillingMode: PAY_PER_REQUEST
+    AttributeDefinitions:
+      - AttributeName: dishId
+        AttributeType: S
+      - AttributeName: userId
+        AttributeType: S
+      - AttributeName: name
+        AttributeType: S
+
+    KeySchema:
+      - AttributeName: dishId
+        KeyType: HASH
+
+    GlobalSecondaryIndexes:
+      - IndexName: userIdGlobalIndex
+        KeySchema:
+          - AttributeName: userId
+            KeyType: HASH
+          - AttributeName: name
+            KeyType: RANGE
+        Projection:
+          ProjectionType: ALL
