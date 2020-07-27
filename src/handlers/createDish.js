@@ -40,7 +40,7 @@ async function createDish(event, context) {
   try {
     await dynamodb
       .put({
-        TableName: process.env.DISHES_TABLE_NAME,
+        TableName: process.env.RECIPES_TABLE_NAME,
         Item: dish,
       })
       .promise();
