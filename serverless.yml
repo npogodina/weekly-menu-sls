@@ -62,6 +62,15 @@ functions:
           cors: true
           # authorizer: ${self:custom.authorizer}
 
+  editDish:
+    handler: src/handlers/updateDish.handler
+    events:
+      - http:
+          method: PATCH
+          path: /dishes/{id}
+          cors: true
+          # authorizer: ${self:custom.authorizer}
+
   deleteDish:
     handler: src/handlers/deleteDish.handler
     events:
