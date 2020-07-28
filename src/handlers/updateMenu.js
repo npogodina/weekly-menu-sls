@@ -113,6 +113,10 @@ async function updateMenu(event, context) {
     let dish = null;
     for (let day in dates) {
       if (menu.menu[dates[day]][meal]) {
+        // get dish and add to groceryList if
+        // first dish (servings < eaters),
+        // same dish again, but not enough ingredients (servings < eaters) or
+        // new dish (even if leftover servings > eaters)
         if (
           servings < 2 ||
           (day !== 0 &&
@@ -154,7 +158,7 @@ async function updateMenu(event, context) {
           addToGroceryList(dish);
         }
 
-        // Else decrese servings
+        // Decrese servings in any case
         servings -= 2;
       }
     }
