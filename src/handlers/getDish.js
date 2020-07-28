@@ -12,16 +12,15 @@ async function getDish(event, context) {
   const params = {
     TableName: process.env.RECIPES_TABLE_NAME,
     // IndexName: "dishIdGlobalIndex",
-    KeyConditionExpression: "dishId = :hkey",
-    ExpressionAttributeValues: {
-      ":hkey": id,
+    Key: {
+      dishId: id,
     },
   };
 
   try {
-    const result = await dynamodb.query(params).promise();
+    const result = await dynamodb.get(params).promise();
     console.log(result);
-    dish = result.Items[0];
+    dish = result.Item;
   } catch (error) {
     console.error(error);
     throw new createError.InternalServerError(error);
