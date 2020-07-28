@@ -1,28 +1,24 @@
 import AWS from "aws-sdk";
 import createError from "http-errors";
-// import urlSlug from "url-slug";
 import commonMiddleware from "../lib/commonMiddleware";
 
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 
 async function getMenu(event, context) {
   let menu;
-  console.log(event.pathParameters);
   let { menuId } = event.pathParameters;
-  // name = urlSlug.revert(name, "-", urlSlug.transformers.titlecase);
 
   const params = {
     TableName: process.env.PLANS_TABLE_NAME,
-    KeyConditionExpression: "menuId = :hkey",
-    ExpressionAttributeValues: {
-      ":hkey": menuId,
+    Key: {
+      menuId: menuId,
     },
   };
 
   try {
-    const result = await dynamodb.query(params).promise();
+    const result = await dynamodb.get(params).promise();
     console.log(result);
-    menu = result.Items[0];
+    menu = result.Item;
   } catch (error) {
     console.error(error);
     throw new createError.InternalServerError(error);
