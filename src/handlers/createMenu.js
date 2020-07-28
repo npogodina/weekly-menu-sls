@@ -327,7 +327,7 @@ async function createMenu(event, context) {
   try {
     await dynamodb
       .put({
-        TableName: process.env.MENUS_TABLE_NAME,
+        TableName: process.env.PLANS_TABLE_NAME,
         Item: menu,
       })
       .promise();

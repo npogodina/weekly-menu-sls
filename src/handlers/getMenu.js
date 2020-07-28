@@ -12,8 +12,7 @@ async function getMenu(event, context) {
   // name = urlSlug.revert(name, "-", urlSlug.transformers.titlecase);
 
   const params = {
-    TableName: process.env.MENUS_TABLE_NAME,
-    IndexName: "menuIdGlobalIndex",
+    TableName: process.env.PLANS_TABLE_NAME,
     KeyConditionExpression: "menuId = :hkey",
     ExpressionAttributeValues: {
       ":hkey": menuId,
@@ -30,7 +29,7 @@ async function getMenu(event, context) {
   }
 
   if (!menu) {
-    throw new createError.NotFound(`Dish not found`);
+    throw new createError.NotFound(`Menu not found`);
   }
 
   return {

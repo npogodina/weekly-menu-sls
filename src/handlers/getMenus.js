@@ -13,7 +13,8 @@ async function getMenus(event, context) {
 
   // const nataliya = "google-oauth2|102165070264738113845";
   const params = {
-    TableName: process.env.MENUS_TABLE_NAME,
+    TableName: process.env.PLANS_TABLE_NAME,
+    IndexName: "userIdGlobalIndex",
     KeyConditionExpression: "userId = :hkey",
     ExpressionAttributeValues: {
       ":hkey": userId,
