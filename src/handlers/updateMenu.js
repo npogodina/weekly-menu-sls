@@ -1,11 +1,11 @@
 import AWS from "aws-sdk";
-import { v4 as uuid } from "uuid";
 import createError from "http-errors";
 import commonMiddleware from "../lib/commonMiddleware";
 
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 
 async function updateMenu(event, context) {
+  const { menuId } = event.pathParameters;
   const { userId, startDate, familySize, updatedMenu } = event.body;
   const now = new Date();
 
@@ -14,7 +14,7 @@ async function updateMenu(event, context) {
     startDate,
     familySize,
     timestamp: now.toISOString(),
-    menuId: uuid(),
+    menuId,
     menu: updatedMenu,
     groceryList: {},
     groceryListText: [],
@@ -123,16 +123,24 @@ async function updateMenu(event, context) {
           // Get next dish info from Dynamodb
           try {
             const result = await dynamodb
-              .get({
-                TableName: process.env.DISHES_TABLE_NAME,
-                Key: {
-                  userId: userId,
-                  name: menu.menu[dates[day]][meal],
+              .query({
+                TableName: process.env.RECIPES_TABLE_NAME,
+                IndexName: "userIdGlobalIndex",
+                // ProjectionExpression: "#n",
+                KeyConditionExpression: "userId = :hkey and #n = :rkey",
+                ExpressionAttributeNames: {
+                  "#n": "name",
+                },
+                ExpressionAttributeValues: {
+                  ":hkey": userId,
+                  ":rkey": menu.menu[dates[day]][meal],
                 },
               })
               .promise();
-            dish = result.Item;
-            servings = result.Item.servings;
+            console.log(result);
+            console.log(result.Items[0]);
+            dish = result.Items[0];
+            servings = result.Items[0].servings;
           } catch (error) {
             console.error(error);
             throw new createError.InternalServerError(error);
@@ -192,7 +200,7 @@ async function updateMenu(event, context) {
   try {
     await dynamodb
       .put({
-        TableName: process.env.MENUS_TABLE_NAME,
+        TableName: process.env.PLANS_TABLE_NAME,
         Item: menu,
       })
       .promise();
