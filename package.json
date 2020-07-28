@@ -20,8 +20,10 @@
     "@middy/http-error-handler": "^1.0.0",
     "@middy/http-event-normalizer": "^1.0.0",
     "@middy/http-json-body-parser": "^1.0.0",
+    "@types/aws-lambda": "^8.10.59",
     "aws-sdk": "^2.639.0",
     "http-errors": "^1.8.0",
+    "recipe-scraper": "^1.23.4",
     "url-slug": "^2.3.1",
     "uuid": "^8.2.0"
   }

@@ -38,6 +38,15 @@ functions:
   #         path: /dishes-migration
   #         cors: true
 
+  scrapeDish:
+    handler: src/handlers/scrapeDish.handler
+    events:
+      - http:
+          method: POST
+          path: /scraper
+          cors: true
+          # authorizer: ${self:custom.authorizer}
+
   createDish:
     handler: src/handlers/createDish.handler
     events:
