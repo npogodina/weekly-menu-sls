@@ -1,0 +1,13 @@
+PlansTableIAM:
+  Effect: Allow
+  Action:
+    - dynamodb:PutItem
+    - dynamodb:Scan
+    - dynamodb:GetItem
+    - dynamodb:*
+  Resource:
+    - ${self:custom.PlansTable.arn}
+    - !Join [
+        "/",
+        ["${self:custom.PlansTable.arn}", "index", "userIdGlobalIndex"],
+      ]

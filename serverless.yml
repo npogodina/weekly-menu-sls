@@ -15,25 +15,28 @@ provider:
     DISHES_TABLE_NAME: ${self:custom.DishesTable.name}
     MENUS_TABLE_NAME: ${self:custom.MenusTable.name}
     RECIPES_TABLE_NAME: ${self:custom.RecipesTable.name}
+    PLANS_TABLE_NAME: ${self:custom.PlansTable.name}
   iamRoleStatements:
     - ${file(iam/DishesTableIAM.yml):DishesTableIAM}
     - ${file(iam/MenusTableIAM.yml):MenusTableIAM}
     - ${file(iam/RecipesTableIAM.yml):RecipesTableIAM}
+    - ${file(iam/PlansTableIAM.yml):PlansTableIAM}
 
 resources:
   Resources:
     DishesTable: ${file(resources/DishesTable.yml):DishesTable}
     MenusTable: ${file(resources/MenusTable.yml):MenusTable}
     RecipesTable: ${file(resources/RecipesTable.yml):RecipesTable}
+    PlansTable: ${file(resources/PlansTable.yml):PlansTable}
 
 functions:
-  dishesMigration:
-    handler: src/handlers/dishesMigration.handler
-    events:
-      - http:
-          method: GET
-          path: /dishes-migration
-          cors: true
+  # dishesMigration:
+  #   handler: src/handlers/dishesMigration.handler
+  #   events:
+  #     - http:
+  #         method: GET
+  #         path: /dishes-migration
+  #         cors: true
 
   createDish:
     handler: src/handlers/createDish.handler
@@ -143,3 +146,6 @@ custom:
   RecipesTable:
     name: !Ref RecipesTable
     arn: !GetAtt RecipesTable.Arn
+  PlansTable:
+    name: !Ref PlansTable
+    arn: !GetAtt PlansTable.Arn

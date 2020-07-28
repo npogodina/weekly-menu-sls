@@ -1,0 +1,26 @@
+PlansTable:
+  Type: AWS::DynamoDB::Table
+  Properties:
+    TableName: PlansTable-${self:provider.stage}
+    BillingMode: PAY_PER_REQUEST
+    AttributeDefinitions:
+      - AttributeName: userId
+        AttributeType: S
+      - AttributeName: startDate
+        AttributeType: S
+      - AttributeName: menuId
+        AttributeType: S
+
+    KeySchema:
+      - AttributeName: menuId
+        KeyType: HASH
+
+    GlobalSecondaryIndexes:
+      - IndexName: userIdGlobalIndex
+        KeySchema:
+          - AttributeName: userId
+            KeyType: HASH
+          - AttributeName: startDate
+            KeyType: RANGE
+        Projection:
+          ProjectionType: ALL
