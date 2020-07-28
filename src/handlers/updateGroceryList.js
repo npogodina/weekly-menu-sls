@@ -5,7 +5,8 @@ import commonMiddleware from "../lib/commonMiddleware";
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 
 async function updateGroceryList(event, context) {
-  const { userId, startDate, updatedGroceryListText } = event.body;
+  const { updatedGroceryListText } = event.body;
+  let { menuId } = event.pathParameters;
 
   // Sort groceryListText
   let sortedGroceryListText = updatedGroceryListText.sort((a, b) => {
@@ -19,10 +20,9 @@ async function updateGroceryList(event, context) {
   });
 
   var params = {
-    TableName: process.env.MENUS_TABLE_NAME,
+    TableName: process.env.PLANS_TABLE_NAME,
     Key: {
-      userId,
-      startDate,
+      menuId,
     },
     UpdateExpression: "set groceryListText = :a",
     ExpressionAttributeValues: {
