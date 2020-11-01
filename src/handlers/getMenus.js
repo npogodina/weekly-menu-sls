@@ -29,6 +29,14 @@ async function getMenus(event, context) {
     throw new createError.InternalServerError(error);
   }
 
+  if( menus.length === 0){
+    return {
+      statusCode: 400,
+      body:
+        "You don't have any menus yet!",
+    };
+  }
+
   return {
     statusCode: 200,
     body: JSON.stringify(menus),
