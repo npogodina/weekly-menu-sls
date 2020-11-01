@@ -27,6 +27,14 @@ async function getDishes(event, context) {
     throw new createError.InternalServerError(error);
   }
 
+  if(dishes.length === 0){
+    return {
+      statusCode: 400,
+      body:
+        "You don't have any dishes yet!",
+    };
+  }
+
   return {
     statusCode: 200,
     body: JSON.stringify(dishes),
